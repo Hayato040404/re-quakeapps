@@ -26,12 +26,12 @@ let adminMessage = {
 
 // VAPID keys for web push notifications
 const vapidKeys = {
-  publicKey: 'BC1T1-o4f9vLJ11ngQXOZTdKY8xd38vUyWeWyPosJ7JDJxnCPrAGtJZE_CUW4dqdh60eEUf5G-qzWjaojsSMer0',
-  privateKey: 'ya3LjwPTzOVTnLaz5S5qrtPne7I_C_tAEr60jzEQZAY'
+  publicKey: process.env.VAPID_PUBLIC_KEY || 'BC1T1-o4f9vLJ11ngQXOZTdKY8xd38vUyWeWyPosJ7JDJxnCPrAGtJZE_CUW4dqdh60eEUf5G-qzWjaojsSMer0',
+  privateKey: process.env.VAPID_PRIVATE_KEY || 'ya3LjwPTzOVTnLaz5S5qrtPne7I_C_tAEr60jzEQZAY'
 };
 
 webPush.setVapidDetails(
-  'mailto:example@yourdomain.org',
+  process.env.VAPID_SUBJECT || 'mailto:example@yourdomain.org',
   vapidKeys.publicKey,
   vapidKeys.privateKey
 );
@@ -160,7 +160,7 @@ function connectEewWebSocket() {
       if (message.Title && message.CodeType) {
         let formattedMessage;
         if (message.isCancel) {
-          formattedMessage = "先程の緊急地震速報は取り消されました。";
+          formattedMessage = "【EWC緊急地震速報】\n先程の緊急地震速報は取り消されました。";
         } else {
           formattedMessage = formatEewMessage(message);
           if (message.isAssumption) {
@@ -185,7 +185,7 @@ function connectEewWebSocket() {
 }
 
 function formatEewMessage(data) {
-  return `【${data.Title} 推定最大震度${data.MaxIntensity}】\n(第${data.Serial}報)\n${data.OriginTime.split(' ')[1]}頃、${data.Hypocenter}を震源とする地震がありました。地震の規模はM${data.Magunitude}程度、震源の深さは約${data.Depth}km、最大震度${data.MaxIntensity}程度と推定されています。`;
+  return `【EWC緊急地震速報】\n推定最大震度${data.MaxIntensity}\n(第${data.Serial}報)\n${data.OriginTime.split(' ')[1]}頃、${data.Hypocenter}を震源とする地震がありました。地震の規模はM${data.Magunitude}程度、震源の深さは約${data.Depth}km、最大震度${data.MaxIntensity}程度と推定されています。`;
 }
 
 function formatEarthquakeInfo(earthquake, message) {
@@ -205,9 +205,9 @@ function formatEarthquakeInfo(earthquake, message) {
   const tsunamiInfo = getTsunamiInfo(earthquake.domesticTsunami);
   const freeFormComment = message.comments?.freeFormComment || '';
 
-  // 震度速報のフォーマット
+  // 震度速報のフォーマット（EWC）
   if (message.issue && message.issue.type === 'ScalePrompt') {
-    let formattedMessage = `[震度速報]\n${date} ${timeStr}ころ、地震による強い揺れを感じました。震度３以上が観測された地域をお知らせします。\n`;
+    let formattedMessage = `【EWC震度速報】\n${date} ${timeStr}頃`;
 
     Object.keys(pointsByScale).sort((a, b) => b - a).forEach(scale => {
       formattedMessage += `\n《震度${scale}》`;
@@ -219,8 +219,14 @@ function formatEarthquakeInfo(earthquake, message) {
     return formattedMessage;
   }
 
-  // 通常の地震情報のフォーマット
-  let formattedMessage = `[地震情報]\n${date} ${timeStr}頃\n震源地：${hypocenter}\n最大震度：${maxScale}\n深さ：${depth}\n規模：M${magnitude}\n${tsunamiInfo}\n\n［各地の震度］`;
+  // 通常の地震情報のフォーマット（EWC）
+  let formattedMessage = `【EWC地震情報】\n` +
+    `震源地：${hypocenter}\n` +
+    `最大震度：${maxScale}\n` +
+    `規模：M${magnitude}\n` +
+    `震源の深さ：${depth}\n` +
+    `発生日時：${date} ${timeStr}頃\n` +
+    `${tsunamiInfo}\n\n［各地の震度］`;
 
   // 震度順序を定義
   const scaleOrder = ['7', '6強', '6弱', '5強', '5弱', '4', '3', '2', '1'];
@@ -298,18 +304,18 @@ function getTsunamiInfo(domesticTsunami) {
 
 function formatTsunamiWarningInfo(message) {
   if (message.cancelled) {
-    return "津波警報等（大津波警報・津波警報あるいは津波注意報）は解除されました。";
+    return "【EWC津波情報】\n津波警報等（大津波警報・津波警報あるいは津波注意報）は解除されました。";
   }
 
   // 津波警報の種類に応じてメッセージを作成
   const warnings = {
-    MajorWarning: '【大津波警報🟪】\n大津波警報を発表しました！\n今すぐ高台やビルに避難！！\n【対象地域】',
-    Warning: '【津波警報🟥】\n津波警報を発表しています！\n高台や近くのビルへ避難！\n【対象地域】',
-    Watch: '【津波注意報🟨】\n津波注意報を発表しています。\n海や川から離れて下さい！\n【対象地域】',
-    Unknown: '【津波情報❓️】\n津波の状況は不明です。\n今後の情報に注意してください。\n※プログラムエラーの可能性大。開発者をメンションして下さい。'
+    MajorWarning: '【EWC大津波警報🟪】\n大津波警報を発表しました！\n今すぐ高台やビルに避難！！\n【対象地域】',
+    Warning: '【EWC津波警報🟥】\n津波警報を発表しています！\n高台や近くのビルへ避難！\n【対象地域】',
+    Watch: '【EWC津波注意報🟨】\n津波注意報を発表しています。\n海や川から離れて下さい！\n【対象地域】',
+    Unknown: '【EWC津波情報❓️】\n津波の状況は不明です。\n今後の情報に注意してください。\n※プログラムエラーの可能性大。開発者をメンションして下さい。'
   };
 
-  let formattedMessage = warnings[message.areas[0].grade] || '【津波情報】\n津波の状況が不明です。\n【対象地域】';
+  let formattedMessage = warnings[message.areas[0].grade] || '【EWC津波情報】\n津波の状況が不明です。\n【対象地域】';
 
   const areas = message.areas.map(area => {
     const name = area.name;
@@ -328,7 +334,7 @@ function formatTsunamiWarningInfo(message) {
 }
 
 function sendWebPushNotification(message) {
-  const payload = JSON.stringify({ title: '地震情報', body: message });
+  const payload = JSON.stringify({ title: 'EWC 地震速報', body: message });
 
   subscriptions.forEach(subscription => {
     webPush.sendNotification(subscription, payload).catch(error => {
@@ -338,7 +344,7 @@ function sendWebPushNotification(message) {
 }
 
 async function sendLineBroadcast(message) {
-  const token = 'phHkJycfaMjHVXDcir9/eIdPV8uVhEsaqcosdBo53JxJtr2D2n+yrvUbe8aSiKGFXmwHEH1O0w+B5MwHGxq28G6R6kTkqrWPA/siv6vLWC/mxGBKYXIvB76n41taoa3fqOou9/vShToLAKaUG+tQFVAdB04t89/1O/w1cDnyilFU=';
+  const token = process.env.LINE_BROADCAST_TOKEN || '';
   const url = 'https://api.line.me/v2/bot/message/broadcast';
   const headers = {
     'Content-Type': 'application/json',
@@ -353,6 +359,10 @@ async function sendLineBroadcast(message) {
     ]
   };
 
+  if (!token) {
+    console.warn('LINE_BROADCAST_TOKEN is not set; skipping LINE broadcast');
+    return;
+  }
   try {
     const response = await axios.post(url, body, { headers });
     console.log('Message sent to LINE Broadcast:', response.data);
