@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EWC 地震速報</title>
+    <title>Seismo</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="apple-touch-icon" sizes="180x180" href="/ewc.png">
     <link rel="icon" type="image/png" sizes="192x192" href="/ewc.png">
@@ -651,161 +651,18 @@
     border: none;
     display: block;
 }
-/* Settings drawer (iOS-like) */
-.settings-icon {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--card-background);
-    border-radius: 8px;
-    box-shadow: 0 1px 3px var(--shadow);
-    cursor: pointer;
-    user-select: none;
-}
-
-.settings-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.2);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    display: none;
-    z-index: 1500;
-}
-
-.settings-overlay.show { display: block; }
-
-.settings-panel {
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    width: min(560px, 92vw);
-    background: var(--background);
-    box-shadow: -2px 0 12px rgba(0,0,0,0.2);
-    transform: translateX(100%);
-    transition: transform 0.3s ease;
-    overflow-y: auto;
-}
-
-.settings-overlay.show .settings-panel { transform: translateX(0); }
-
-.settings-header {
-    position: sticky;
-    top: 0;
-    background: var(--card-background);
-    border-bottom: 1px solid var(--divider);
-    padding: 14px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    z-index: 1;
-}
-
-.settings-title { font-size: 17px; font-weight: 600; }
-.settings-close { background: none; border: none; color: var(--system-blue); font-size: 16px; cursor: pointer; }
-
-.settings-section-title {
-    padding: 14px 16px 8px;
-    font-size: 12px;
-    color: var(--text-tertiary);
-    letter-spacing: 0.5px;
-}
-
-.settings-group {
-    background: var(--card-background);
-    margin: 0 12px 16px;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 1px 2px var(--shadow);
-}
-
-.settings-cell {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 14px 16px;
-    border-bottom: 1px solid var(--divider);
-}
-.settings-cell:last-child { border-bottom: none; }
-.cell-text { font-size: 16px; color: var(--text-primary); }
-.cell-sub { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
-.cell-col { display: flex; flex-direction: column; gap: 2px; }
-
-/* iOS-like switch */
-.switch { position: relative; display: inline-block; width: 48px; height: 28px; }
-.switch input { opacity: 0; width: 0; height: 0; }
-.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: var(--system-gray4); transition: .2s; border-radius: 999px; }
-.slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 3px; top: 3px; background: white; transition: .2s; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,.3); }
-input:checked + .slider { background: var(--system-blue); }
-input:checked + .slider:before { transform: translateX(20px); }
-
-.settings-button { background: var(--system-blue); color: white; border: none; border-radius: 8px; padding: 10px 12px; font-size: 14px; cursor: pointer; }
-.settings-link { color: var(--text-primary); text-decoration: none; }
-
-/* Compact mode */
-.compact .list-item { padding: 12px; }
-.compact .list-item-title { font-size: 15px; }
-.compact .list-item-subtitle { font-size: 13px; }
-.compact .scale-indicator { width: 20px; height: 20px; line-height: 20px; font-size: 11px; }
-
-/* Offline banner */
-.offline-banner {
-    display: none;
-    background: #fffbdd;
-    color: #8a6d3b;
-    border-bottom: 1px solid #f7e1a1;
-    padding: 8px 16px;
-    font-size: 13px;
-    text-align: center;
-}
-.offline-banner.show { display: block; }
-
-/* Manual theme override */
-.theme-dark {
-    --background: #000000;
-    --card-background: #1C1C1E;
-    --text-primary: #FFFFFF;
-    --text-secondary: #98989E;
-    --text-tertiary: #636366;
-    --divider: rgba(84, 84, 88, 0.65);
-    --shadow: rgba(0, 0, 0, 0.3);
-    --active-background: rgba(255, 255, 255, 0.05);
-    --copy-button-bg: rgba(0, 122, 255, 0.2);
-    --copy-button-active: rgba(0, 122, 255, 0.3);
-}
-.theme-light {
-    --background: #F2F2F7;
-    --card-background: #FFFFFF;
-    --text-primary: #000000;
-    --text-secondary: #6C6C70;
-    --text-tertiary: #8E8E93;
-    --divider: rgba(60, 60, 67, 0.1);
-    --shadow: rgba(0, 0, 0, 0.05);
-    --active-background: rgba(0, 0, 0, 0.05);
-    --copy-button-bg: rgba(0, 122, 255, 0.1);
-    --copy-button-active: rgba(0, 122, 255, 0.2);
-}
     </style>
 </head>
 <body>
     <div class="container">
-        <div id="offlineBanner" class="offline-banner" role="status" aria-live="polite">オフラインです。接続を確認してください。</div>
         <div id="adminMessage" class="admin-message">
             <button class="admin-message-close" onclick="hideAdminMessage()">×</button>
             <div id="adminMessageText"></div>
         </div>
 
         <div class="header">
-            <div id="openSettingsBtn" class="settings-icon" title="設定" aria-label="設定">⚙️</div>
-            <h1 class="app-title">EWC 地震速報</h1>
-            <p class="app-subtitle">EWC 専用版</p>
+            <h1 class="app-title">地震情報</h1>
+            <p class="app-subtitle">Version 6a.3.1</p>
             <div class="button-row">
                 <button id="subscribeButton" class="btn">通知を許可</button>
                 <button id="testNotificationButton" class="btn">テスト通知</button>
@@ -815,7 +672,7 @@ input:checked + .slider:before { transform: translateX(20px); }
             </div>
         </div>
 
-        <div class="section-header">EWC 地震速報</div>
+        <div class="section-header">地震情報アプリ　Seismo</div>
         <div class="section-subheader">最新の地震情報を表示しています</div>
         <div class="list-group" id="earthquakeList">
             <div class="loading-indicator">
@@ -904,107 +761,7 @@ input:checked + .slider:before { transform: translateX(20px); }
         </div>
     </div>
 
-    <!-- 管理者メニューは設定画面の長押しで表示 -->
-
-    <!-- Settings Drawer -->
-    <div id="settingsOverlay" class="settings-overlay" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
-        <div class="settings-panel">
-            <div class="settings-header">
-                <div id="settingsTitle" class="settings-title">設定</div>
-                <button id="closeSettingsBtn" class="settings-close">閉じる</button>
-            </div>
-
-            <div class="settings-section-title">通知設定</div>
-            <div class="settings-group">
-                <div class="settings-cell">
-                    <div class="cell-col">
-                        <div class="cell-text">通知を有効にする</div>
-                        <div class="cell-sub">プッシュ通知を受け取ります</div>
-                    </div>
-                    <label class="switch"><input id="togglePush" type="checkbox"><span class="slider"></span></label>
-                </div>
-                <div class="settings-cell">
-                    <div class="cell-col">
-                        <div class="cell-text">地震情報の通知</div>
-                        <div class="cell-sub">新しい地震情報を通知</div>
-                    </div>
-                    <label class="switch"><input id="toggleQuakePush" type="checkbox"><span class="slider"></span></label>
-                </div>
-                <div class="settings-cell">
-                    <div class="cell-col">
-                        <div class="cell-text">緊急地震速報の通知</div>
-                        <div class="cell-sub">EEWを優先的に通知</div>
-                    </div>
-                    <label class="switch"><input id="toggleEewPush" type="checkbox"><span class="slider"></span></label>
-                </div>
-                <div class="settings-cell">
-                    <div class="cell-col">
-                        <div class="cell-text">テスト通知を送信</div>
-                    </div>
-                    <button id="testNotificationButton2" class="settings-button">送信</button>
-                </div>
-            </div>
-
-            <div class="settings-section-title">表示設定</div>
-            <div class="settings-group">
-                <div class="settings-cell">
-                    <div class="cell-col">
-                        <div class="cell-text">ダークモード</div>
-                        <div class="cell-sub">自動 / 常にオン / 常にオフ</div>
-                    </div>
-                    <select id="themeSelect">
-                        <option value="auto">自動</option>
-                        <option value="dark">常にオン</option>
-                        <option value="light">常にオフ</option>
-                    </select>
-                </div>
-                <div class="settings-cell">
-                    <div class="cell-col">
-                        <div class="cell-text">コンパクト表示</div>
-                        <div class="cell-sub">カードの高さを抑えます</div>
-                    </div>
-                    <label class="switch"><input id="toggleCompact" type="checkbox"><span class="slider"></span></label>
-                </div>
-                <div class="settings-cell">
-                    <div class="cell-col">
-                        <div class="cell-text">詳細を自動展開</div>
-                        <div class="cell-sub">最新の項目を自動で開く</div>
-                    </div>
-                    <label class="switch"><input id="toggleAutoExpand" type="checkbox"><span class="slider"></span></label>
-                </div>
-            </div>
-
-            <div class="settings-section-title">データ設定</div>
-            <div class="settings-group">
-                <div class="settings-cell">
-                    <div class="cell-col">
-                        <div class="cell-text">キャッシュをクリア</div>
-                        <div class="cell-sub">オフラインキャッシュを削除します</div>
-                    </div>
-                    <button id="clearCacheBtn" class="settings-button">クリア</button>
-                </div>
-            </div>
-
-            <div class="settings-section-title">情報</div>
-            <div class="settings-group">
-                <div class="settings-cell">
-                    <div class="cell-col">
-                        <div class="cell-text">バージョン情報</div>
-                        <div id="versionLabel" class="cell-sub">EWC 地震速報</div>
-                    </div>
-                </div>
-                <div class="settings-cell">
-                    <a class="settings-link" href="/teams.html">利用規約</a>
-                </div>
-                <div class="settings-cell">
-                    <a class="settings-link" href="mailto:ewc@svk.jp">お問い合わせ</a>
-                </div>
-                <div id="adminRow" class="settings-cell" style="display:none;">
-                    <a class="settings-link" href="/admin">管理者メニュー</a>
-                </div>
-            </div>
-        </div>
-    </div>
+    <a href="/admin" class="admin-button" title="管理者メニュー">⚙️</a>
 
     <script>
         const publicVapidKey = 'BC1T1-o4f9vLJ11ngQXOZTdKY8xd38vUyWeWyPosJ7JDJxnCPrAGtJZE_CUW4dqdh60eEUf5G-qzWjaojsSMer0';
@@ -1141,54 +898,56 @@ input:checked + .slider:before { transform: translateX(20px); }
             const tsunamiInfo = getTsunamiInfo(earthquake.earthquake.domesticTsunami);
             const freeFormComment = earthquake.comments?.freeFormComment || '';
 
-            // 震度速報
+            let formattedMessage;
+
             if (earthquake.issue && earthquake.issue.type === 'ScalePrompt') {
-                let msg = `【EWC震度速報】\n${date} ${timeStr}頃`;
-                const scaleOrder = ['7', '6強', '6弱', '5強', '5弱', '4', '3', '2', '1'];
-                const sortedScales = Object.keys(pointsByScale).sort((a, b) => scaleOrder.indexOf(a) - scaleOrder.indexOf(b));
-                sortedScales.forEach(scale => {
-                    msg += `\n\n《震度${scale}》`;
+                //formattedMessage = `[震度速報]\n${date} ${timeStr}ごろ、地震による強い揺れを感じました。震度３以上が観測された地域をお知らせします。\n`;
+                formattedMessage = `[震度速報]\n${date} ${timeStr}頃\n`;
+                Object.keys(pointsByScale).sort((a, b) => b - a).forEach(scale => {
+                    formattedMessage += `\n《震度${scale}》`;
                     Object.keys(pointsByScale[scale]).forEach(pref => {
-                        const uniqueCities = Array.from(new Set(pointsByScale[scale][pref]));
-                        msg += `\n【${pref}】${uniqueCities.join(' ')}`;
+                        formattedMessage += `\n【${pref}】${pointsByScale[scale][pref].join('  ')}`;
                     });
                 });
-                return msg;
-            }
+            } else {
+                formattedMessage = `[地震情報]\n${date} ${timeStr}頃\n震源地：${hypocenter}\n最大震度：${maxScale}\n深さ：${depth}\n規模：M${magnitude}\n${tsunamiInfo}`;
 
-            // 通常地震情報（EWCフォーマット）
-            let formattedMessage = `【EWC地震情報】\n`;
-            formattedMessage += `震源地：${hypocenter}\n`;
-            formattedMessage += `最大震度：${maxScale}\n`;
-            formattedMessage += `規模：M${magnitude}\n`;
-            formattedMessage += `震源の深さ：${depth}\n`;
-            formattedMessage += `発生日時：${date} ${timeStr}頃\n`;
-            formattedMessage += `${tsunamiInfo}`;
-
-            const scaleOrder = ['7', '6強', '6弱', '5強', '5弱', '4', '3', '2', '1'];
-            const sortedScales = Object.keys(pointsByScale).sort((a, b) => scaleOrder.indexOf(a) - scaleOrder.indexOf(b));
-            if (sortedScales.length > 0) {
-                formattedMessage += `\n［各地の震度］`;
-            }
-            sortedScales.forEach(scale => {
-                formattedMessage += `\n《震度${scale}》`;
-                Object.keys(pointsByScale[scale]).forEach(pref => {
-                    const uniqueCities = Array.from(new Set(pointsByScale[scale][pref]));
-                    formattedMessage += `\n【${pref}】${uniqueCities.join(' ')}`;
+                const scaleOrder = ['7', '6強', '6弱', '5強', '5弱', '5弱以上と推定されるが震度情報を入手していない', '4', '3', '2', '1'];
+                const sortedScales = Object.keys(pointsByScale).sort((a, b) => {
+                    return scaleOrder.indexOf(a) - scaleOrder.indexOf(b);
                 });
-            });
 
-            if (freeFormComment) {
-                formattedMessage += `\n\n【情報】\n${freeFormComment}`;
-            }
-            if (earthquake.issue && earthquake.issue.correct === 'ScaleOnly') {
-                formattedMessage += `\n\n《震度の訂正がありました。》`;
-            }
-            if (earthquake.issue && earthquake.issue.correct === 'DestinationOnly') {
-                formattedMessage += `\n\n《震源の訂正がありました。》`;
-            }
-            if (earthquake.issue && earthquake.issue.correct === 'ScaleAndDestination') {
-                formattedMessage += `\n\n《震源・震度の訂正がありました。》`;
+                if (earthquake.issue && earthquake.issue.type === 'ScaleAndDestination') {
+                    formattedMessage += `\n \n[各地の震度]`;
+                }
+              
+                if (earthquake.issue && earthquake.issue.type === 'DetailScale') {
+                    formattedMessage += `\n \n[各地の震度]`;
+                }
+              
+                sortedScales.forEach(scale => {
+                    formattedMessage += `\n《震度${scale}》`;
+                    Object.keys(pointsByScale[scale]).forEach(pref => {
+                        const uniqueCities = new Set();
+                        pointsByScale[scale][pref].forEach(addr => {
+                            uniqueCities.add(addr);
+                        });
+                        formattedMessage += `\n【${pref}】${Array.from(uniqueCities).join(' ')}`;
+                    });
+                });
+
+                if (freeFormComment) {
+                    formattedMessage += `\n\n【情報】\n${freeFormComment}`;
+                }
+                if (earthquake.issue && earthquake.issue.correct === 'ScaleOnly') {
+                    formattedMessage += `\n\n《震度の訂正がありました。》`;
+                }
+                if (earthquake.issue && earthquake.issue.correct === 'DestinationOnly') {
+                    formattedMessage += `\n\n《震源の訂正がありました。》`;
+                }
+                if (earthquake.issue && earthquake.issue.correct === 'ScaleAndDestination') {
+                    formattedMessage += `\n\n《震源・震度の訂正がありました。》`;
+                }
             }
 
             return formattedMessage;
@@ -1196,13 +955,14 @@ input:checked + .slider:before { transform: translateX(20px); }
 
         function generateDetailedEewText(data) {
             if (data.isCancel) {
-                return "【EWC緊急地震速報】\n先程の緊急地震速報は取り消されました。";
+                return "先程の緊急地震速報は取り消されました。";
             }
+            
             let formattedMessage = formatEewMessage(data);
-            formattedMessage = `【EWC緊急地震速報】\n` + formattedMessage;
             if (data.isAssumption) {
                 formattedMessage += "\n※この緊急地震速報は精度が低い可能性があります※";
             }
+            
             return formattedMessage;
         }
 
@@ -1211,7 +971,7 @@ input:checked + .slider:before { transform: translateX(20px); }
             const date = time.toLocaleDateString('ja-JP', { month: '2-digit', day: '2-digit' });
             const timeStr = time.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
 
-            let formattedMessage = `【EWC津波情報】\n発生日時：${date} ${timeStr}頃\n震源地：${tsunami.anm || '不明'}\n規模：${tsunami.mag ? 'M' + tsunami.mag : '不明'}`;
+            let formattedMessage = `[津波情報]\n${date} ${timeStr}頃\n震源地：${tsunami.anm || '不明'}\n規模：${tsunami.mag ? 'M' + tsunami.mag : '不明'}`;
 
             if (!detailedData || !detailedData.Body || !detailedData.Body.Tsunami || !detailedData.Body.Tsunami.Forecast) {
                 const kind = tsunami.kind && tsunami.kind.length > 0 ? tsunami.kind[0].kind : '不明';
@@ -1722,7 +1482,7 @@ function scrollToWeatherSection() {
                 ? `約${parseFloat(depth)}km`
                 : "";
 
-            let message = `推定最大震度${data.MaxIntensity}\n(第${data.Serial}報)\n${data.OriginTime.split(' ')[1]}頃、${data.Hypocenter}を震源とする地震がありました。地震の規模はM${magnitude}程度、震源の深さは${depth}、最大震度${data.MaxIntensity}程度と推定されています。`;
+            let message = `【${data.Title} 推定最大震度${data.MaxIntensity}】\n(第${data.Serial}報)\n${data.OriginTime.split(' ')[1]}頃、${data.Hypocenter}を震源とする地震がありました。地震の規模はM${magnitude}程度、震源の深さは${depth}、最大震度${data.MaxIntensity}程度と推定されています。`;
 
             if (data.WarnArea && Array.isArray(data.WarnArea) && data.WarnArea.length > 0) {
                 const warningAreas = data.WarnArea.filter(area => area.Type === "警報").map(area => area.Chiiki);
@@ -1867,146 +1627,11 @@ function scrollToWeatherSection() {
         });
 
         document.addEventListener('DOMContentLoaded', () => {
-            initSettings();
             fetchEarthquakeInfo();
             fetchEewInfo();
             fetchTsunamiInfo();
             fetchAdminMessage();
         });
-    </script>
-    <script>
-        // Settings logic
-        function initSettings() {
-            // Theme
-            const savedTheme = localStorage.getItem('ewc-theme') || 'auto';
-            const themeSelect = document.getElementById('themeSelect');
-            if (themeSelect) themeSelect.value = savedTheme;
-            applyThemePreference(savedTheme);
-            themeSelect?.addEventListener('change', (e) => {
-                const val = e.target.value;
-                localStorage.setItem('ewc-theme', val);
-                applyThemePreference(val);
-            });
-
-            // Compact
-            const compact = localStorage.getItem('ewc-compact') === '1';
-            const compactToggle = document.getElementById('toggleCompact');
-            if (compactToggle) compactToggle.checked = compact;
-            applyCompactMode(compact);
-            compactToggle?.addEventListener('change', (e) => {
-                const checked = e.target.checked;
-                localStorage.setItem('ewc-compact', checked ? '1' : '0');
-                applyCompactMode(checked);
-            });
-
-            // Auto expand
-            const autoExpand = localStorage.getItem('ewc-autoExpand') === '1';
-            const autoExpandToggle = document.getElementById('toggleAutoExpand');
-            if (autoExpandToggle) autoExpandToggle.checked = autoExpand;
-            autoExpandToggle?.addEventListener('change', (e) => {
-                const checked = e.target.checked;
-                localStorage.setItem('ewc-autoExpand', checked ? '1' : '0');
-            });
-
-            // Push toggles
-            const pushEnabled = localStorage.getItem('ewc-push-enabled') !== '0';
-            const pushToggle = document.getElementById('togglePush');
-            if (pushToggle) pushToggle.checked = pushEnabled;
-            pushToggle?.addEventListener('change', (e) => {
-                const enabled = e.target.checked;
-                localStorage.setItem('ewc-push-enabled', enabled ? '1' : '0');
-                updatePushSubscription(enabled);
-            });
-            const quakePush = localStorage.getItem('ewc-push-quake') !== '0';
-            const eewPush = localStorage.getItem('ewc-push-eew') !== '0';
-            document.getElementById('toggleQuakePush')?.addEventListener('change', (e) => {
-                localStorage.setItem('ewc-push-quake', e.target.checked ? '1' : '0');
-            });
-            document.getElementById('toggleEewPush')?.addEventListener('change', (e) => {
-                localStorage.setItem('ewc-push-eew', e.target.checked ? '1' : '0');
-            });
-            const quakeEl = document.getElementById('toggleQuakePush'); if (quakeEl) quakeEl.checked = quakePush;
-            const eewEl = document.getElementById('toggleEewPush'); if (eewEl) eewEl.checked = eewPush;
-
-            // Settings open/close
-            document.getElementById('openSettingsBtn')?.addEventListener('click', () => openSettings());
-            document.getElementById('closeSettingsBtn')?.addEventListener('click', () => closeSettings());
-            document.getElementById('settingsOverlay')?.addEventListener('click', (e) => { if (e.target.id === 'settingsOverlay') closeSettings(); });
-
-            // Test notification in settings
-            document.getElementById('testNotificationButton2')?.addEventListener('click', () => {
-                sendTestNotification().catch(console.error);
-            });
-
-            // Clear cache
-            document.getElementById('clearCacheBtn')?.addEventListener('click', async () => {
-                try {
-                    const keys = await caches.keys();
-                    await Promise.all(keys.map(k => caches.delete(k)));
-                    alert('キャッシュをクリアしました。');
-                } catch (e) {
-                    alert('キャッシュのクリアに失敗しました。');
-                }
-            });
-
-            // Long-press to reveal admin
-            const versionLabel = document.getElementById('versionLabel');
-            if (versionLabel) {
-                let pressTimer;
-                versionLabel.addEventListener('touchstart', startPress);
-                versionLabel.addEventListener('mousedown', startPress);
-                versionLabel.addEventListener('touchend', cancelPress);
-                versionLabel.addEventListener('mouseup', cancelPress);
-                versionLabel.addEventListener('mouseleave', cancelPress);
-                function startPress() { pressTimer = setTimeout(() => { document.getElementById('adminRow').style.display = 'flex'; }, 800); }
-                function cancelPress() { clearTimeout(pressTimer); }
-            }
-
-            // Offline banner
-            function updateOnlineStatus() {
-                const banner = document.getElementById('offlineBanner');
-                if (!navigator.onLine) { banner.classList.add('show'); } else { banner.classList.remove('show'); }
-            }
-            window.addEventListener('online', updateOnlineStatus);
-            window.addEventListener('offline', updateOnlineStatus);
-            updateOnlineStatus();
-
-            // Pull to refresh (simple)
-            let startY = 0; let pulling = false;
-            window.addEventListener('touchstart', (e) => { if (window.scrollY === 0) { startY = e.touches[0].clientY; pulling = true; } });
-            window.addEventListener('touchmove', (e) => { if (!pulling) return; });
-            window.addEventListener('touchend', (e) => { if (!pulling) return; const dy = (e.changedTouches?.[0]?.clientY || 0) - startY; if (dy > 80) { location.reload(); } pulling = false; });
-        }
-
-        function openSettings() { document.getElementById('settingsOverlay').classList.add('show'); }
-        function closeSettings() { document.getElementById('settingsOverlay').classList.remove('show'); }
-
-        function applyThemePreference(mode) {
-            document.documentElement.classList.remove('theme-dark', 'theme-light');
-            if (mode === 'dark') document.documentElement.classList.add('theme-dark');
-            else if (mode === 'light') document.documentElement.classList.add('theme-light');
-        }
-
-        function applyCompactMode(enabled) {
-            if (enabled) document.body.classList.add('compact');
-            else document.body.classList.remove('compact');
-        }
-
-        async function updatePushSubscription(enabled) {
-            if (!('serviceWorker' in navigator)) return;
-            try {
-                const registration = await navigator.serviceWorker.getRegistration();
-                if (!registration) { if (enabled) await navigator.serviceWorker.register('/service-worker.js'); return; }
-                const sub = await registration.pushManager.getSubscription();
-                if (enabled) {
-                    if (!sub) { await subscribe(); }
-                } else {
-                    if (sub) { await sub.unsubscribe(); }
-                }
-            } catch (e) {
-                console.error('Failed to update push subscription', e);
-            }
-        }
     </script>
 </body>
 </html>
