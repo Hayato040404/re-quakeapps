@@ -901,29 +901,22 @@
             let formattedMessage;
 
             if (earthquake.issue && earthquake.issue.type === 'ScalePrompt') {
-                //formattedMessage = `[震度速報]\n${date} ${timeStr}ごろ、地震による強い揺れを感じました。震度３以上が観測された地域をお知らせします。\n`;
-                formattedMessage = `[震度速報]\n${date} ${timeStr}頃\n`;
+                formattedMessage = `【EWC震度速報(${timeStr})】`;
                 Object.keys(pointsByScale).sort((a, b) => b - a).forEach(scale => {
                     formattedMessage += `\n《震度${scale}》`;
                     Object.keys(pointsByScale[scale]).forEach(pref => {
-                        formattedMessage += `\n【${pref}】${pointsByScale[scale][pref].join('  ')}`;
+                        formattedMessage += `\n${pref}`;
                     });
                 });
             } else {
-                formattedMessage = `[地震情報]\n${date} ${timeStr}頃\n震源地：${hypocenter}\n最大震度：${maxScale}\n深さ：${depth}\n規模：M${magnitude}\n${tsunamiInfo}`;
+                formattedMessage = `【EWC地震情報 最大震度${maxScale}】\n震源地：${hypocenter}\n規模：M${magnitude}\n深さ：${depth}\n日時：${date} ${timeStr}頃\n${tsunamiInfo}`;
 
                 const scaleOrder = ['7', '6強', '6弱', '5強', '5弱', '5弱以上と推定されるが震度情報を入手していない', '4', '3', '2', '1'];
                 const sortedScales = Object.keys(pointsByScale).sort((a, b) => {
                     return scaleOrder.indexOf(a) - scaleOrder.indexOf(b);
                 });
 
-                if (earthquake.issue && earthquake.issue.type === 'ScaleAndDestination') {
-                    formattedMessage += `\n \n[各地の震度]`;
-                }
-              
-                if (earthquake.issue && earthquake.issue.type === 'DetailScale') {
-                    formattedMessage += `\n \n[各地の震度]`;
-                }
+                formattedMessage += `\n\n[各地の震度]`;
               
                 sortedScales.forEach(scale => {
                     formattedMessage += `\n《震度${scale}》`;
@@ -957,12 +950,48 @@
             if (data.isCancel) {
                 return "先程の緊急地震速報は取り消されました。";
             }
-            
-            let formattedMessage = formatEewMessage(data);
-            if (data.isAssumption) {
-                formattedMessage += "\n※この緊急地震速報は精度が低い可能性があります※";
+
+            let magnitude = data.Magunitude;
+            magnitude = typeof magnitude === "number" || (typeof magnitude === "string" && !isNaN(magnitude))
+                ? parseFloat(magnitude).toFixed(1)
+                : "不明";
+
+            let depth = data.Depth;
+            depth = typeof depth === "number" || (typeof depth === "string" && !isNaN(depth))
+                ? `約${parseFloat(depth)}km`
+                : "不明";
+
+            const time = data.OriginTime ? data.OriginTime.split(' ')[1] : '不明';
+            const isWarning = data.Title && data.Title.includes('警報');
+            const alertType = isWarning ? '(警報)' : '(予報)';
+
+            let formattedMessage = `【EWC緊急地震速報${alertType}】\n震源地：${data.Hypocenter}\n推定最大震度：${data.MaxIntensity}\n規模：M${magnitude}\n深さ：${depth}\n日時：${time}頃`;
+
+            if (data.WarnArea && Array.isArray(data.WarnArea) && data.WarnArea.length > 0) {
+                const areasByShindo = {};
+                data.WarnArea.forEach(area => {
+                    const shindo = area.Shindo1;
+                    if (shindo) {
+                        areasByShindo[shindo] = areasByShindo[shindo] || [];
+                        areasByShindo[shindo].push(area.Chiiki);
+                    }
+                });
+
+                const shindoOrder = ['7', '6強', '6弱', '5強', '5弱', '4', '3', '2', '1'];
+                const sortedShindos = Object.keys(areasByShindo).sort((a, b) => shindoOrder.indexOf(a) - shindoOrder.indexOf(b));
+
+                if (sortedShindos.length > 0) {
+                    formattedMessage += `\n\n[予想される震度]`;
+                    sortedShindos.forEach(shindo => {
+                        formattedMessage += `\n《最大震度${shindo}》\n${areasByShindo[shindo].join('、')}`;
+                    });
+                }
             }
-            
+
+            if (data.isAssumption) {
+                formattedMessage += "\n\n※この緊急地震速報は精度が低い可能性があります※";
+            }
+
             return formattedMessage;
         }
 
@@ -1480,16 +1509,15 @@ function scrollToWeatherSection() {
             let depth = data.Depth;
             depth = typeof depth === "number" || (typeof depth === "string" && !isNaN(depth))
                 ? `約${parseFloat(depth)}km`
-                : "";
+                : "不明";
 
-            let message = `【${data.Title} 推定最大震度${data.MaxIntensity}】\n(第${data.Serial}報)\n${data.OriginTime.split(' ')[1]}頃、${data.Hypocenter}を震源とする地震がありました。地震の規模はM${magnitude}程度、震源の深さは${depth}、最大震度${data.MaxIntensity}程度と推定されています。`;
+            const time = data.OriginTime ? data.OriginTime.split(' ')[1] : '不明';
+            const isWarning = data.Title && data.Title.includes('警報');
+            const alertType = isWarning ? '(警報)' : '(予報)';
+
+            let message = `【EWC緊急地震速報${alertType}】\n震源地：${data.Hypocenter}\n推定最大震度：${data.MaxIntensity}\n規模：M${magnitude}\n深さ：${depth}\n日時：${time}頃`;
 
             if (data.WarnArea && Array.isArray(data.WarnArea) && data.WarnArea.length > 0) {
-                const warningAreas = data.WarnArea.filter(area => area.Type === "警報").map(area => area.Chiiki);
-                if (warningAreas.length > 0) {
-                    message += `\n\n⚠️${warningAreas.join('、')}では、強い揺れに警戒してください。⚠️`;
-                }
-
                 const areasByShindo = {};
                 data.WarnArea.forEach(area => {
                     const shindo = area.Shindo1;
@@ -1503,7 +1531,7 @@ function scrollToWeatherSection() {
                 const sortedShindos = Object.keys(areasByShindo).sort((a, b) => shindoOrder.indexOf(a) - shindoOrder.indexOf(b));
 
                 if (sortedShindos.length > 0) {
-                    message += `\n\n【予想される震度】`;
+                    message += `\n\n[予想される震度]`;
                     sortedShindos.forEach(shindo => {
                         message += `\n《最大震度${shindo}》\n${areasByShindo[shindo].join('、')}`;
                     });

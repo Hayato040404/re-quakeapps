@@ -185,7 +185,44 @@ function connectEewWebSocket() {
 }
 
 function formatEewMessage(data) {
-  return `【${data.Title} 推定最大震度${data.MaxIntensity}】\n(第${data.Serial}報)\n${data.OriginTime.split(' ')[1]}頃、${data.Hypocenter}を震源とする地震がありました。地震の規模はM${data.Magunitude}程度、震源の深さは約${data.Depth}km、最大震度${data.MaxIntensity}程度と推定されています。`;
+  let magnitude = data.Magunitude;
+  magnitude = typeof magnitude === "number" || (typeof magnitude === "string" && !isNaN(magnitude))
+    ? parseFloat(magnitude).toFixed(1)
+    : "不明";
+
+  let depth = data.Depth;
+  depth = typeof depth === "number" || (typeof depth === "string" && !isNaN(depth))
+    ? `約${parseFloat(depth)}km`
+    : "不明";
+
+  const time = data.OriginTime ? data.OriginTime.split(' ')[1] : '不明';
+  const isWarning = data.Title && data.Title.includes('警報');
+  const alertType = isWarning ? '(警報)' : '(予報)';
+
+  let message = `【EWC緊急地震速報${alertType}】\n震源地：${data.Hypocenter}\n推定最大震度：${data.MaxIntensity}\n規模：M${magnitude}\n深さ：${depth}\n日時：${time}頃`;
+
+  if (data.WarnArea && Array.isArray(data.WarnArea) && data.WarnArea.length > 0) {
+    const areasByShindo = {};
+    data.WarnArea.forEach(area => {
+      const shindo = area.Shindo1;
+      if (shindo) {
+        areasByShindo[shindo] = areasByShindo[shindo] || [];
+        areasByShindo[shindo].push(area.Chiiki);
+      }
+    });
+
+    const shindoOrder = ['7', '6強', '6弱', '5強', '5弱', '4', '3', '2', '1'];
+    const sortedShindos = Object.keys(areasByShindo).sort((a, b) => shindoOrder.indexOf(a) - shindoOrder.indexOf(b));
+
+    if (sortedShindos.length > 0) {
+      message += `\n\n[予想される震度]`;
+      sortedShindos.forEach(shindo => {
+        message += `\n《最大震度${shindo}》\n${areasByShindo[shindo].join('、')}`;
+      });
+    }
+  }
+
+  return message;
 }
 
 function formatEarthquakeInfo(earthquake, message) {
@@ -207,12 +244,12 @@ function formatEarthquakeInfo(earthquake, message) {
 
   // 震度速報のフォーマット
   if (message.issue && message.issue.type === 'ScalePrompt') {
-    let formattedMessage = `[震度速報]\n${date} ${timeStr}ころ、地震による強い揺れを感じました。震度３以上が観測された地域をお知らせします。\n`;
+    let formattedMessage = `【EWC震度速報(${timeStr})】`;
 
     Object.keys(pointsByScale).sort((a, b) => b - a).forEach(scale => {
       formattedMessage += `\n《震度${scale}》`;
       Object.keys(pointsByScale[scale]).forEach(pref => {
-        formattedMessage += `\n【${pref}】${pointsByScale[scale][pref].join('  ')}`;
+        formattedMessage += `\n${pref}`;
       });
     });
 
@@ -220,7 +257,7 @@ function formatEarthquakeInfo(earthquake, message) {
   }
 
   // 通常の地震情報のフォーマット
-  let formattedMessage = `[地震情報]\n${date} ${timeStr}頃\n震源地：${hypocenter}\n最大震度：${maxScale}\n深さ：${depth}\n規模：M${magnitude}\n${tsunamiInfo}\n\n［各地の震度］`;
+  let formattedMessage = `【EWC地震情報 最大震度${maxScale}】\n震源地：${hypocenter}\n規模：M${magnitude}\n深さ：${depth}\n日時：${date} ${timeStr}頃\n${tsunamiInfo}`;
 
   // 震度順序を定義
   const scaleOrder = ['7', '6強', '6弱', '5強', '5弱', '4', '3', '2', '1'];
@@ -230,19 +267,18 @@ function formatEarthquakeInfo(earthquake, message) {
     return scaleOrder.indexOf(a) - scaleOrder.indexOf(b);
   });
 
+  formattedMessage += `\n\n[各地の震度]`;
   sortedScales.forEach(scale => {
     formattedMessage += `\n《震度${scale}》`;
     Object.keys(pointsByScale[scale]).forEach(pref => {
       const uniqueCities = new Set();
       pointsByScale[scale][pref].forEach(addr => {
-        // 市区町村名を抽出してセットに追加
         const cityMatch = addr.match(/([^市区町村]+[市区町村])/);
         if (cityMatch) {
           uniqueCities.add(cityMatch[1]);
         }
       });
-      // 市区町村のみを表示
-      formattedMessage += `\n【${pref}】${Array.from(uniqueCities).join('  ')}`;
+      formattedMessage += `\n【${pref}】${Array.from(uniqueCities).join(' ')}`;
     });
   });
 
