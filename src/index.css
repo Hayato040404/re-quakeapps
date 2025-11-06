@@ -1,0 +1,64 @@
+:root {
+    --system-blue: #007AFF;
+    --system-red: #FF3B30;
+    --system-green: #34C759;
+    --system-orange: #FF9500;
+    --system-gray: #8E8E93;
+    --system-gray2: #AEAEB2;
+    --system-gray3: #C7C7CC;
+    --system-gray4: #D1D1D6;
+    --system-gray5: #E5E5EA;
+    --system-gray6: #F2F2F7;
+    --system-purple: #AF52DE;
+}
+
+:root {
+    --background: #F2F2F7;
+    --card-background: #FFFFFF;
+    --text-primary: #000000;
+    --text-secondary: #6C6C70;
+    --text-tertiary: #8E8E93;
+    --divider: rgba(60, 60, 67, 0.1);
+    --shadow: rgba(0, 0, 0, 0.05);
+    --active-background: rgba(0, 0, 0, 0.05);
+    --copy-button-bg: rgba(0, 122, 255, 0.1);
+    --copy-button-active: rgba(0, 122, 255, 0.2);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background: #000000;
+        --card-background: #1C1C1E;
+        --text-primary: #FFFFFF;
+        --text-secondary: #98989E;
+        --text-tertiary: #636366;
+        --divider: rgba(84, 84, 88, 0.65);
+        --shadow: rgba(0, 0, 0, 0.3);
+        --active-background: rgba(255, 255, 255, 0.05);
+        --copy-button-bg: rgba(0, 122, 255, 0.2);
+        --copy-button-active: rgba(0, 122, 255, 0.3);
+    }
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Icons", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    background-color: var(--background);
+    color: var(--text-primary);
+    line-height: 1.4;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    padding-bottom: env(safe-area-inset-bottom, 20px);
+}
+
+.container {
+    max-width: 650px;
+    margin: 0 auto;
+    padding: 0;
+}

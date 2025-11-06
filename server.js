@@ -41,6 +41,8 @@ app.use(bodyParser.json());
 
 let subscriptions = [];
 
+app.use(express.static(path.join(__dirname, 'dist')));
+
 // HTTP サーバーを作成して Render が要求するポートをリッスン
 const server = http.createServer(app);
 
@@ -414,5 +416,10 @@ app.post('/test-notification', (req, res) => {
   res.status(201).json({});
 });
 
-// Serve static files (for PWA)
+// Serve static files from public (for service worker, icons, etc.)
 app.use(express.static('public'));
+
+// Serve React app for all other routes (must be last)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
