@@ -6,8 +6,23 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'liquid-glass': ['liquid-glass-react']
+        }
+      }
+    }
+  },
+  optimizeDeps: {
+    include: ['liquid-glass-react']
   },
   server: {
     port: 5173,
   },
+  resolve: {
+    alias: {
+      'liquid-glass-react': 'liquid-glass-react/dist/index.js'
+    }
+  }
 });
